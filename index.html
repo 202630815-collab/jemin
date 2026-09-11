@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스피드 홀짝 게임!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Pretendard', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            margin-top: 0;
+            color: #4a4a4a;
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 1.5rem 0;
+            background: #f7f9fc;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        .dice-box {
+            font-size: 5rem;
+            margin: 1.5rem 0;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            color: white;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .btn-odd {
+            background-color: #ff6b6b;
+        }
+        .btn-odd:hover {
+            background-color: #fa5252;
+        }
+        .btn-even {
+            background-color: #4d96ff;
+        }
+        .btn-even:hover {
+            background-color: #3b7ddd;
+        }
+        .result {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 1.5em;
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>🎲 홀짝 맞추기</h1>
+        <p>1부터 10 사이의 숫자는 홀일까요, 짝일까요?</p>
+
+        <div class="score-board">
+            <div>연속 성공: <span id="streak" style="color: #4d96ff;">0</span>회</div>
+            <div>최고 기록: <span id="max-streak" style="color: #ff6b6b;">0</span>회</div>
+        </div>
+
+        <div class="dice-box" id="num-display">❓</div>
+
+        <div class="buttons">
+            <button class="btn-odd" onclick="play('odd')">홀 (Odd)</button>
+            <button class="btn-even" onclick="play('even')">짝 (Even)</button>
+        </div>
+
+        <div class="result" id="result-text">선택해 주세요!</div>
+    </div>
+
+    <script>
+        let currentStreak = 0;
+        let maxStreak = 0;
+        let isPlaying = false;
+
+        function play(userChoice) {
+            if (isPlaying) return;
+            isPlaying = true;
+
+            const numDisplay = document.getElementById('num-display');
+            const resultText = document.getElementById('result-text');
+
+            // 애니메이션 연출
+            numDisplay.classList.add('shake');
+            numDisplay.innerText = '🎲';
+            resultText.innerText = '두근두근...';
+            resultText.style.color = '#333';
+
+            setTimeout(() => {
+                // 1~10 사이의 랜덤 숫자 생성
+                const randomNum = Math.floor(Math.random() * 10) + 1;
+                const isEven = randomNum % 2 === 0;
+                const actualAnswer = isEven ? 'even' : 'odd';
+
+                numDisplay.classList.remove('shake');
+                numDisplay.innerText = randomNum;
+
+                // 결과 판정
+                if (userChoice === actualAnswer) {
+                    currentStreak++;
+                    if (currentStreak > maxStreak) {
+                        maxStreak = currentStreak;
+                        document.getElementById('max-streak').innerText = maxStreak;
+                    }
+                    resultText.innerText = `정답입니다! 🎉 (${randomNum} = ${isEven ? '짝수' : '홀수'})`;
+                    resultText.style.color = '#2b8a3e';
+                } else {
+                    currentStreak = 0;
+                    resultText.innerText = `틀렸습니다! 😭 (${randomNum} = ${isEven ? '짝수' : '홀수'})`;
+                    resultText.style.color = '#e03131';
+                }
+
+                document.getElementById('streak').innerText = currentStreak;
+                isPlaying = false;
+            }, 600);
+        }
+    </script>
+</body>
+</html>
