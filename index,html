@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>반응속도 테스트 게임</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Pretendard', -apple-system, sans-serif;
+            user-select: none;
+        }
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+        .container {
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+        }
+        #screen {
+            width: 100%;
+            height: 350px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            transition: background-color 0.2s ease, transform 0.1s;
+            padding: 20px;
+        }
+        #screen:active {
+            transform: scale(0.98);
+        }
+        /* 상태별 배경색 */
+        .waiting { background-color: #4a90e2; }  /* 대기 (파랑) */
+        .ready { background-color: #e74c3c; }    /* 준비 (빨강) */
+        .now { background-color: #2ecc71; }      /* 클릭! (초록) */
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .sub-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .score-board {
+            margin-top: 25px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            font-weight: bold;
+            color: #333;
+        }
+        .score-board span {
+            color: #4a90e2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="screen" class="waiting" onclick="handleClick()">
+            <div class="title" id="main-text">⚡ 반응속도 테스트</div>
+            <div class="sub-text" id="sub-text">화면을 클릭해서 시작하세요!</div>
+        </div>
+
+        <div class="score-board">
+            <div>이번 기록: <span id="current-score">-</span></div>
+            <div>최고 기록: <span id="best-score">-</span></div>
+        </div>
+    </div>
+
+    <script>
+        const screen = document.getElementById('screen');
+        const mainText = document.getElementById('main-text');
+        const subText = document.getElementById('sub-text');
+        const currentScoreEl = document.getElementById('current-score');
+        const bestScoreEl = document.getElementById('best-score');
+
+        let state = 'waiting'; // waiting, ready, now
+        let timer = null;
+        let startTime = 0;
+        let endTime = 0;
+        let bestScore = Infinity;
+
+        function handleClick() {
+            if (state === 'waiting') {
+                // 시작 ➔ 준비 상태 (빨간색)
+                state = 'ready';
+                screen.className = 'ready';
+                mainText.innerText = '🔴 초록색이 되면 클릭!';
+                subText.innerText = '기다리세요...';
+
+                // 2초 ~ 5초 사이 랜덤 시간 후 초록색으로 변경
+                const randomDelay = Math.floor(Math.random() * 3000) + 2000;
+                timer = setTimeout(() => {
+                    state = 'now';
+                    screen.className = 'now';
+                    mainText.innerText = '🟢 지금 클릭하세요!!!';
+                    subText.innerText = '빠르게!';
+                    startTime = new Date().getTime();
+                }, randomDelay);
+
+            } else if (state === 'ready') {
+                // 너무 일찍 클릭했을 때 (성급함)
+                clearTimeout(timer);
+                state = 'waiting';
+                screen.className = 'waiting';
+                mainText.innerText = '❌ 너무 빨랐어요!';
+                subText.innerText = '초록색으로 바뀌면 클릭하세요. 다시 클릭!';
+
+            } else if (state === 'now') {
+                // 정상 클릭 (기록 측정)
+                endTime = new Date().getTime();
+                const reactionTime = endTime - startTime;
+                
+                state = 'waiting';
+                screen.className = 'waiting';
+                mainText.innerText = `${reactionTime} ms!`;
+                subText.innerText = '다시 하려면 화면을 클릭하세요.';
+
+                currentScoreEl.innerText = reactionTime + ' ms';
+
+                if (reactionTime < bestScore) {
+                    bestScore = reactionTime;
+                    bestScoreEl.innerText = bestScore + ' ms';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
