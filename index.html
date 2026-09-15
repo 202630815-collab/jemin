@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘 저녁 뭐 먹지? | 저녁 메뉴 추천</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+    }
+
+    body {
+      background-color: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 450px;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background-color: #fff8f0;
+      border: 2px dashed #ff9d00;
+      border-radius: 15px;
+      padding: 30px 20px;
+      margin-bottom: 25px;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .category-badge {
+      font-size: 13px;
+      background-color: #ff9d00;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .menu-name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #222;
+      word-break: keep-all;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .btn-recommend {
+      background-color: #ff6b6b;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn-recommend:hover {
+      background-color: #ee5253;
+      transform: translateY(-2px);
+    }
+
+    .btn-search {
+      background-color: #f1f2f6;
+      color: #333;
+      text-decoration: none;
+      display: block;
+      line-height: 20px;
+    }
+
+    .btn-search:hover {
+      background-color: #dfe4ea;
+    }
+
+    .btn-search.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🍽️ 오늘 저녁 뭐 먹지?</h1>
+    <p class="subtitle">결정 장애를 위한 랜덤 메뉴 추천기</p>
+
+    <div class="card">
+      <div id="category" class="category-badge" style="display: none;">한식</div>
+      <div id="menu" class="menu-name">버튼을 눌러보세요!</div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-recommend" onclick="recommendMenu()">🎲 메뉴 뽑기</button>
+      <a id="searchBtn" class="btn-search disabled" href="#" target="_blank">
+        <button type="button" class="btn-search" style="border:none;">🔍 레시피/맛집 검색하기</button>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // 메뉴 데이터 목록
+    const menuList = [
+      { name: "김치찌개 & 계란말이", category: "한식" },
+      { name: "된장찌개 & 삼겹살", category: "한식" },
+      { name: "제육볶음", category: "한식" },
+      { name: "닭볶음탕", category: "한식" },
+      { name: "비빔밥", category: "한식" },
+      { name: "짜장면 & 탕수육", category: "중식" },
+      { name: "짬뽕", category: "중식" },
+      { name: "마라탕", category: "중식" },
+      { name: "초밥 (스시)", category: "일식" },
+      { name: "돈가스", category: "일식" },
+      { name: "라멘", category: "일식" },
+      { name: "파스타 & 샐러드", category: "양식" },
+      { name: "피자 & 맥주", category: "양식" },
+      { name: "스테이크", category: "양식" },
+      { name: "치맥 (치킨 & 맥주)", category: "야식/간편식" },
+      { name: "떡볶이 & 튀김", category: "분식" },
+      { name: "쌀국수", category: "아시안" },
+      { name: "부대찌개", category: "한식" }
+    ];
+
+    function recommendMenu() {
+      const menuText = document.getElementById("menu");
+      const categoryBadge = document.getElementById("category");
+      const searchBtn = document.getElementById("searchBtn");
+
+      // 약간의 애니메이션 효과 (로딩 느낌)
+      let count = 0;
+      const interval = setInterval(() => {
+        const randomTemp = menuList[Math.floor(Math.random() * menuList.length)];
+        menuText.innerText = randomTemp.name;
+        categoryBadge.innerText = randomTemp.category;
+        categoryBadge.style.display = "inline-block";
+        count++;
+
+        if (count > 10) {
+          clearInterval(interval);
+          
+          // 최종 결정 메뉴
+          const finalMenu = menuList[Math.floor(Math.random() * menuList.length)];
+          menuText.innerText = finalMenu.name;
+          categoryBadge.innerText = finalMenu.category;
+
+          // 네이버 검색 링크 연결
+          const searchUrl = `https://search.naver.com/search.naver?query=${encodeURIComponent(finalMenu.name + " 레시피 맛집")}`;
+          searchBtn.href = searchUrl;
+          searchBtn.classList.remove("disabled");
+        }
+      }, 50);
+    }
+  </script>
+</body>
+</html>
