@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASD 깃허브 게임</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #121212;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        h1 { margin-bottom: 5px; }
+        p { margin-top: 0; color: #aaa; }
+        #gameCanvas {
+            border: 3px solid #00ffcc;
+            background-color: #1e1e1e;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>WASD 회피 게임</h1>
+    <p>WASD 키로 녹색 네모를 움직여 빨간 적을 피하세요!</p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // 플레이어 설정
+        const player = {
+            x: canvas.width / 2 - 15,
+            y: canvas.height / 2 - 15,
+            size: 30,
+            speed: 5,
+            color: "#00ffcc"
+        };
+
+        // 적(Obstacle) 설정
+        const enemies = [];
+        const enemySpeed = 3;
+        let score = 0;
+        let gameOver = false;
+
+        // 키 입력 상태
+        const keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false
+        };
+
+        // 키보드 이벤트 리스너
+        window.addEventListener("keydown", (e) => {
+            const key = e.key.toLowerCase();
+            if (keys.hasOwnProperty(key)) keys[key] = true;
+        });
+
+        window.addEventListener("keyup", (e) => {
+            const key = e.key.toLowerCase();
+            if (keys.hasOwnProperty(key)) keys[key] = false;
+        });
+
+        // 적 생성 함수
+        function spawnEnemy() {
+            if (gameOver) return;
+            const size = Math.random() * 20 + 15;
+            enemies.push({
+                x: Math.random() * (canvas.width - size),
+                y: -size,
+                size: size,
+                speed: enemySpeed + Math.random() * 2
+            });
+        }
+
+        setInterval(spawnEnemy, 800);
+
+        // 게임 루프
+        function update() {
+            if (gameOver) return;
+
+            // WASD 이동 로직
+            if (keys.w && player.y > 0) player.y -= player.speed;
+            if (keys.s && player.y + player.size < canvas.height) player.y += player.speed;
+            if (keys.a && player.x > 0) player.x -= player.speed;
+            if (keys.d && player.x + player.size < canvas.width) player.x += player.speed;
+
+            // 적 이동 및 충돌 체크
+            for (let i = 0; i < enemies.length; i++) {
+                let e = enemies[i];
+                e.y += e.speed;
+
+                // 충돌 감지 (AABB)
+                if (
+                    player.x < e.x + e.size &&
+                    player.x + player.size > e.x &&
+                    player.y < e.y + e.size &&
+                    player.y + player.size > e.y
+                ) {
+                    gameOver = true;
+                    alert(`게임 오버! 최종 점수: ${score}`);
+                    location.reload();
+                }
+
+                // 화면 아래로 벗어나면 점수 증가
+                if (e.y > canvas.height) {
+                    enemies.splice(i, 1);
+                    score += 10;
+                    i--;
+                }
+            }
+        }
+
+        // 화면 그리기
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 플레이어 그리기
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+
+            // 적 그리기
+            ctx.fillStyle = "#ff4d4d";
+            for (let e of enemies) {
+                ctx.fillRect(e.x, e.y, e.size, e.size);
+            }
+
+            // 점수 표시
+            ctx.fillStyle = "white";
+            ctx.font = "18px sans-serif";
+            ctx.fillText(`점수: ${score}`, 15, 30);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
