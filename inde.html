@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마음 안식처 - 스트레스 완화 & 감각 진정</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sage: {
+              50: '#f4f7f5',
+              100: '#e3eae5',
+              200: '#c7d6cd',
+              300: '#a3bcae',
+              400: '#7c9e8b',
+              500: '#5c806c',
+              600: '#466654',
+              700: '#385143',
+              800: '#2f4238',
+              900: '#283730',
+            },
+            calm: {
+              blue: '#e0f2fe',
+              lavender: '#f3e8ff',
+              teal: '#ccfbf1',
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-8px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(92, 128, 108, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(92, 128, 108, 0.4);
+    }
+
+    /* Glassmorphism utility */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .glass-card-dark {
+      background: rgba(40, 55, 48, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Box Breathing Square animation transition */
+    #boxBreathSquare {
+      transition: all 4s linear;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-sage-50 via-calm-teal/30 to-calm-lavender/40 text-slate-700 min-h-full flex flex-col font-sans selection:bg-sage-200">
+
+  <header class="w-full max-w-6xl mx-auto px-4 pt-6 pb-2 flex flex-wrap justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-sage-500 text-white flex items-center justify-center shadow-lg shadow-sage-500/20">
+        <i class="fa-solid fa-spa text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-sage-900 tracking-tight">마음 안식처</h1>
+        <p class="text-xs text-sage-600">언제 어디서나 실천하는 즉각적 스트레스 완화</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Rain Sound Toggle Button -->
+      <button id="rainAudioBtn" onclick="toggleRainSound()" class="glass-card hover:bg-white px-4 py-2 rounded-full text-xs font-medium text-sage-800 transition flex items-center gap-2 shadow-sm border border-sage-200">
+        <i class="fa-solid fa-cloud-rain text-sage-500" id="rainIcon"></i>
+        <span id="rainText">빗소리 켜기</span>
+      </button>
+
+      <!-- GitHub Guide Button -->
+      <button onclick="openGithubModal()" class="bg-sage-700 hover:bg-sage-800 text-white px-4 py-2 rounded-full text-xs font-medium transition flex items-center gap-2 shadow-md shadow-sage-700/20">
+        <i class="fa-brands fa-github text-sm"></i>
+        <span>GitHub 배포 방법</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 py-6 flex flex-col gap-6">
+
+    <!-- Quote Banner -->
+    <div class="glass-card rounded-2xl p-4 md:p-6 text-center border border-white/80 shadow-sm relative overflow-hidden">
+      <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-sage-200/40 rounded-full blur-xl pointer-events-none"></div>
+      <p id="quoteText" class="text-sm md:text-base font-medium text-sage-800 leading-relaxed">
+        "지금 느끼는 과부하는 잠시 지나가는 마음의 날씨일 뿐입니다. 어깨의 힘을 풀고 이곳에 머물러 보세요."
+      </p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex flex-wrap md:flex-nowrap gap-2 bg-sage-100/60 p-1.5 rounded-2xl border border-sage-200/50">
+      <button onclick="switchTab('grounding')" id="tab-grounding" class="tab-btn active flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 bg-white text-sage-800 shadow-sm">
+        <i class="fa-solid fa-hand-holding-heart text-sage-500"></i>
+        <span>5-4-3-2-1 감각 오프라인</span>
+      </button>
+      <button onclick="switchTab('pmr')" id="tab-pmr" class="tab-btn flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-sage-600 hover:text-sage-900">
+        <i class="fa-solid fa-child text-sage-500"></i>
+        <span>점진적 근육 이완법</span>
+      </button>
+      <button onclick="switchTab('vagus')" id="tab-vagus" class="tab-btn flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-sage-600 hover:text-sage-900">
+        <i class="fa-solid fa-feather text-sage-500"></i>
+        <span>미주신경 자극</span>
+      </button>
+      <button onclick="switchTab('box')" id="tab-box" class="tab-btn flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 text-sage-600 hover:text-sage-900">
+        <i class="fa-solid fa-vector-square text-sage-500"></i>
+        <span>4-4-4-4 박스 호흡</span>
+      </button>
+    </nav>
+
+    <section id="content-grounding" class="tab-content glass-card rounded-3xl p-6 md:p-8 shadow-sm">
+      <div class="mb-6">
+        <div class="inline-block px-3 py-1 bg-sage-100 text-sage-700 rounded-full text-xs font-semibold mb-2">마음 그라운딩 (Grounding)</div>
+        <h2 class="text-xl md:text-2xl font-bold text-sage-900">5-4-3-2-1 감각 오프라인 기법</h2>
+        <p class="text-xs md:text-sm text-slate-600 mt-1">
+          머릿속 소음에서 벗어나 현재의 신체 감각으로 의식을 복귀시킵니다. 각 항목에 맞춰 주변 요소를 직접 확인하고 체크하거나 입력해 보세요.
+        </p>
+      </div>
+
+      <!-- Grounding Interactive Checklist -->
+      <div class="space-y-4">
+        <!-- Step 5: See -->
+        <div class="p-4 rounded-2xl bg-white/80 border border-sage-100 shadow-sm transition hover:border-sage-300">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center">5</span>
+              <span class="font-bold text-sm md:text-base text-slate-800">눈에 보이는 것 5가지 관찰하기</span>
+            </div>
+            <i class="fa-solid fa-eye text-blue-400"></i>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">주변에 있는 물건이나 색상, 빛을 천천히 5가지 눈으로 찾아보세요.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
+            <input type="text" placeholder="1. 예: 창문" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="2. 예: 시계" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="3. 예: 화분" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="4. 예: 컵" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="5. 예: 키보드" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+          </div>
+        </div>
+
+        <!-- Step 4: Touch -->
+        <div class="p-4 rounded-2xl bg-white/80 border border-sage-100 shadow-sm transition hover:border-sage-300">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center">4</span>
+              <span class="font-bold text-sm md:text-base text-slate-800">직접 느껴지는 촉감 4가지</span>
+            </div>
+            <i class="fa-solid fa-hand text-emerald-400"></i>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">옷감의 촉감, 책상의 차가움, 발바닥이 땅에 닿는 느낌 등에 집중해보세요.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+            <input type="text" placeholder="1. 예: 차가운 책상" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="2. 예: 바지 재질" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="3. 예: 발바닥 접지감" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="4. 예: 따뜻한 공기" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+          </div>
+        </div>
+
+        <!-- Step 3: Hear -->
+        <div class="p-4 rounded-2xl bg-white/80 border border-sage-100 shadow-sm transition hover:border-sage-300">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-purple-100 text-purple-700 font-bold text-xs flex items-center justify-center">3</span>
+              <span class="font-bold text-sm md:text-base text-slate-800">들려오는 소리 3가지</span>
+            </div>
+            <i class="fa-solid fa-ear-listen text-purple-400"></i>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">귀를 기울여 아주 작은 주변 소음까지 느껴봅니다.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input type="text" placeholder="1. 예: 시계 초침 소리" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="2. 예: 컴퓨터 팬 소리" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="3. 예: 멀리서 나는 차 소리" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+          </div>
+        </div>
+
+        <!-- Step 2: Smell -->
+        <div class="p-4 rounded-2xl bg-white/80 border border-sage-100 shadow-sm transition hover:border-sage-300">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center">2</span>
+              <span class="font-bold text-sm md:text-base text-slate-800">맡아지는 냄새 2가지</span>
+            </div>
+            <i class="fa-solid fa-wind text-amber-400"></i>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">숨을 깊게 들이쉬며 인지되는 향기를 찾아보세요.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="text" placeholder="1. 예: 비누/섬유유연제 향" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+            <input type="text" placeholder="2. 예: 커피 향" class="grounding-input text-xs p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+          </div>
+        </div>
+
+        <!-- Step 1: Taste -->
+        <div class="p-4 rounded-2xl bg-white/80 border border-sage-100 shadow-sm transition hover:border-sage-300">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-full bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center">1</span>
+              <span class="font-bold text-sm md:text-base text-slate-800">입안의 미각 1가지</span>
+            </div>
+            <i class="fa-solid fa-utensils text-rose-400"></i>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">입안에서 느껴지는 맛이나 감촉에 집중하세요.</p>
+          <input type="text" placeholder="1. 예: 마신 물의 밋밋함 또는 치약 맛" class="grounding-input text-xs w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sage-400 bg-slate-50/50">
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button onclick="resetGrounding()" class="px-5 py-2.5 rounded-xl bg-sage-100 hover:bg-sage-200 text-sage-700 text-xs font-semibold transition">
+          <i class="fa-solid fa-rotate-right mr-1"></i> 감각 세션 초기화
+        </button>
+      </div>
+    </section>
+
+    <section id="content-pmr" class="tab-content hidden glass-card rounded-3xl p-6 md:p-8 shadow-sm">
+      <div class="mb-6">
+        <div class="inline-block px-3 py-1 bg-sage-100 text-sage-700 rounded-full text-xs font-semibold mb-2">신체 긴장 완화</div>
+        <h2 class="text-xl md:text-2xl font-bold text-sage-900">점진적 근육 이완법 (PMR)</h2>
+        <p class="text-xs md:text-sm text-slate-600 mt-1">
+          의도적으로 특정 근육에 5초간 수축 힘을 꽉 준 뒤, 한 번에 '툭' 풀며 긴장이 빠져나가는 이완감을 명확히 관찰합니다.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        <!-- Body Part Selection List -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">이완 부위 선택</label>
+          <button onclick="selectPMRPart(0)" id="pmr-part-0" class="pmr-btn w-full p-3.5 rounded-2xl text-left text-xs sm:text-sm font-semibold transition flex items-center justify-between bg-white border border-sage-300 text-sage-900 shadow-sm">
+            <span class="flex items-center gap-3">
+              <i class="fa-solid fa-user-ninja text-sage-500"></i> 어깨 & 목 (귀 쪽으로 솟구치기)
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+          </button>
+          <button onclick="selectPMRPart(1)" id="pmr-part-1" class="pmr-btn w-full p-3.5 rounded-2xl text-left text-xs sm:text-sm font-semibold transition flex items-center justify-between bg-white/50 border border-slate-200 text-slate-600 hover:bg-white">
+            <span class="flex items-center gap-3">
+              <i class="fa-solid fa-hand-back-fist text-sage-500"></i> 양주먹 & 알통 (꽉 쥐기)
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+          </button>
+          <button onclick="selectPMRPart(2)" id="pmr-part-2" class="pmr-btn w-full p-3.5 rounded-2xl text-left text-xs sm:text-sm font-semibold transition flex items-center justify-between bg-white/50 border border-slate-200 text-slate-600 hover:bg-white">
+            <span class="flex items-center gap-3">
+              <i class="fa-solid fa-face-grimace text-sage-500"></i> 얼굴 & 턱 (인상 찌푸리기)
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+          </button>
+          <button onclick="selectPMRPart(3)" id="pmr-part-3" class="pmr-btn w-full p-3.5 rounded-2xl text-left text-xs sm:text-sm font-semibold transition flex items-center justify-between bg-white/50 border border-slate-200 text-slate-600 hover:bg-white">
+            <span class="flex items-center gap-3">
+              <i class="fa-solid fa-socks text-sage-500"></i> 종아리 & 발가락 (몸쪽 당기기)
+            </span>
+            <i class="fa-solid fa-chevron-right text-xs opacity-50"></i>
+          </button>
+        </div>
+
+        <!-- Interactive PMR Visual Guide & Timer -->
+        <div class="md:col-span-2 bg-gradient-to-br from-white to-sage-50/50 p-6 md:p-8 rounded-3xl border border-sage-100 flex flex-col items-center text-center relative overflow-hidden shadow-sm">
+          <div id="pmrBadge" class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold mb-4">
+            단계 1: 긴장 준비
+          </div>
+
+          <h3 id="pmrTitle" class="text-lg font-bold text-slate-800 mb-2">어깨 & 목 이완하기</h3>
+          <p id="pmrDesc" class="text-xs text-slate-600 mb-6 max-w-sm leading-relaxed">
+            양 어깨를 귀에 붙인다는 느낌으로 5초간 꽉 끌어올려 힘을 주었다가 한 번에 툭 내려놓습니다.
+          </p>
+
+          <!-- Circular PMR Timer -->
+          <div class="relative w-32 h-32 flex items-center justify-center my-2">
+            <svg class="w-full h-full transform -rotate-90">
+              <circle cx="64" cy="64" r="54" stroke="#e2e8f0" stroke-width="8" fill="transparent" />
+              <circle id="pmrProgressCircle" cx="64" cy="64" r="54" stroke="#5c806c" stroke-width="8" fill="transparent"
+                      stroke-dasharray="339.29" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear" />
+            </svg>
+            <div class="absolute flex flex-col items-center justify-center">
+              <span id="pmrTimerDisplay" class="text-3xl font-extrabold text-sage-900">5</span>
+              <span id="pmrPhaseLabel" class="text-[10px] text-slate-500 font-medium">수축 (힘주기)</span>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="mt-6 flex gap-3">
+            <button id="startPmrBtn" onclick="startPMR()" class="px-6 py-3 rounded-2xl bg-sage-700 hover:bg-sage-800 text-white font-bold text-xs sm:text-sm transition shadow-md shadow-sage-700/20">
+              이완 타이머 시작
+            </button>
+            <button onclick="resetPMR()" class="px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition">
+              리셋
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="content-vagus" class="tab-content hidden glass-card rounded-3xl p-6 md:p-8 shadow-sm">
+      <div class="mb-6">
+        <div class="inline-block px-3 py-1 bg-sage-100 text-sage-700 rounded-full text-xs font-semibold mb-2">신체 자율신경 조절</div>
+        <h2 class="text-xl md:text-2xl font-bold text-sage-900">미주신경 자극 & 물리적 진정</h2>
+        <p class="text-xs md:text-sm text-slate-600 mt-1">
+          신체의 휴식을 담당하는 부교감 신경(미주신경)을 물리적 자극으로 빠르게 활성화하여 심장박동을 안정시킵니다.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Card 1: Warm Palms -->
+        <div class="p-5 rounded-2xl bg-white/80 border border-sage-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-hands-holding"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-2">1. 손바닥 온기 전달</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              두 손바닥을 5초 이상 빠르게 비벼 마찰열을 만듭니다. 따뜻해진 손을 지그시 감은 눈 위나 가슴 중앙(심장) 위에 얹고 온기와 묵직함에 집중하세요.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-amber-800 font-semibold">
+            <span>추천 시간: 1분</span>
+            <i class="fa-regular fa-clock"></i>
+          </div>
+        </div>
+
+        <!-- Card 2: Dive Reflex / Cold Water -->
+        <div class="p-5 rounded-2xl bg-white/80 border border-sage-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-droplet"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-2">2. 차가운 자극 (잠수 반사)</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              차가운 물로 세수를 하거나 차가운 물병/젖은 수건을 손목 안쪽이나 목 뒤에 대어줍니다. 순간적으로 포유류 잠수반사(Dive Reflex)가 작용하여 심박수가 줄어듭니다.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-blue-800 font-semibold">
+            <span>즉각적 효과</span>
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+        </div>
+
+        <!-- Card 3: Earlobe Massage -->
+        <div class="p-5 rounded-2xl bg-white/80 border border-sage-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl mb-4">
+              <i class="fa-solid fa-ear-listen"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base mb-2">3. 귓볼 & 귀 오목점 지압</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              귓볼과 귀 안쪽 오목한 부분(이갑개)에는 미주신경 분지가 분포합니다. 엄지와 검지로 귓볼을 잡아 부드럽게 아래로 당기며 원을 그리듯 문질러주세요.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-purple-800 font-semibold">
+            <span>장소 제한 없음</span>
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guided 1-Minute Quiet Timer -->
+      <div class="mt-6 p-6 rounded-2xl bg-sage-800 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+        <div class="text-center sm:text-left">
+          <h4 class="font-bold text-base flex items-center gap-2 justify-center sm:justify-start">
+            <i class="fa-solid fa-hourglass-start text-sage-300"></i>
+            1분 침묵 & 자극 집중 타이머
+          </h4>
+          <p class="text-xs text-sage-200 mt-1">위 방법 중 하나를 선택하고, 1분 동안 조용히 감각에 몰입해 보세요.</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="vagusTimerText" class="text-2xl font-mono font-bold text-sage-200">01:00</span>
+          <button id="vagusTimerBtn" onclick="toggleVagusTimer()" class="px-5 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-400 text-white text-xs font-bold transition">
+            타이머 시작
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="content-box" class="tab-content hidden glass-card rounded-3xl p-6 md:p-8 shadow-sm">
+      <div class="mb-6">
+        <div class="inline-block px-3 py-1 bg-sage-100 text-sage-700 rounded-full text-xs font-semibold mb-2">특수부대 호흡법</div>
+        <h2 class="text-xl md:text-2xl font-bold text-sage-900">4-4-4-4 박스 호흡법 (Box Breathing)</h2>
+        <p class="text-xs md:text-sm text-slate-600 mt-1">
+          네이비실(NAVY SEALs)이 극도의 긴장 상황에서 자율신경을 안정시키기 위해 사용하는 4단계 균형 호흡법입니다.
+        </p>
+      </div>
+
+      <div class="flex flex-col items-center justify-center py-6">
+        <!-- Visualizing Square -->
+        <div class="relative w-64 h-64 sm:w-72 sm:h-72 flex items-center justify-center border-4 border-dashed border-sage-200 rounded-3xl p-4">
+          
+          <!-- Expanding/Contacting Square Indicator -->
+          <div id="boxBreathSquare" class="w-24 h-24 bg-sage-500/20 border-2 border-sage-500 rounded-2xl flex flex-col items-center justify-center shadow-lg backdrop-blur-sm">
+            <span id="boxStageText" class="text-sm font-bold text-sage-900">준비</span>
+            <span id="boxTimerText" class="text-2xl font-extrabold text-sage-800 mt-1">4</span>
+          </div>
+
+          <!-- Edge Direction Guides -->
+          <span class="absolute top-2 text-[11px] font-bold text-sage-600">1. 들이쉬기 (4초)</span>
+          <span class="absolute right-2 text-[11px] font-bold text-sage-600 transform rotate-90 origin-right">2. 멈추기 (4초)</span>
+          <span class="absolute bottom-2 text-[11px] font-bold text-sage-600">3. 내쉬기 (4초)</span>
+          <span class="absolute left-2 text-[11px] font-bold text-sage-600 transform -rotate-90 origin-left">4. 멈추기 (4초)</span>
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-8 flex items-center gap-3">
+          <button id="boxStartBtn" onclick="toggleBoxBreathing()" class="px-8 py-3.5 rounded-2xl bg-sage-700 hover:bg-sage-800 text-white font-bold text-sm transition shadow-lg shadow-sage-700/20">
+            박스 호흡 시작하기
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="w-full max-w-6xl mx-auto px-4 py-6 mt-auto text-center border-t border-sage-200/50 text-xs text-slate-500">
+    <p>본 페이지는 스트레스 완화를 돕는 보조 도구입니다. 지속적인 극심한 불안은 전문 의료진과의 상담을 권장합니다.</p>
+  </footer>
+
+  <div id="githubModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="glass-card-dark text-white max-w-2xl w-full rounded-3xl p-6 md:p-8 shadow-2xl overflow-y-auto max-h-[90vh] border border-white/10">
+      <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-3">
+          <i class="fa-brands fa-github text-2xl text-sage-300"></i>
+          <h3 class="text-lg font-bold">GitHub Pages 무료 배포 가이드</h3>
+        </div>
+        <button onclick="closeGithubModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-sm transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300 mb-6 leading-relaxed">
+        이 코드를 내 깃허브(GitHub) 저장소에 올려 누구나 방문할 수 있는 웹사이트 URL로 만드는 방법입니다.
+      </p>
+
+      <div class="space-y-4 text-xs text-slate-200">
+        <!-- Step 1 -->
+        <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+          <span class="font-bold text-sage-300 block mb-1">STEP 1. GitHub 저장소(Repository) 생성</span>
+          <p class="text-slate-300">
+            1) <a href="https://github.com" target="_blank" class="text-amber-300 underline">GitHub.com</a> 로그인 후 우측 상단 <strong>[+] -> [New repository]</strong> 클릭<br>
+            2) Repository name에 <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">username.github.io</code> 형식 또는 원하는 이름(예: <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">mind-rest</code>) 입력<br>
+            3) Public 선택 후 <strong>[Create repository]</strong> 클릭
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+          <span class="font-bold text-sage-300 block mb-1">STEP 2. index.html 파일 저장 및 업로드</span>
+          <p class="text-slate-300">
+            1) 현재 웹페이지의 전체 소스코드를 복사하여 컴퓨터에 <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">index.html</code> 이름으로 저장합니다.<br>
+            2) 생성된 GitHub 저장소 화면에서 <strong>"uploading an existing file"</strong> 링크를 클릭하고 <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">index.html</code> 파일을 드래그하여 올립니다.<br>
+            3) 하단 <strong>[Commit changes]</strong> 버튼을 누릅니다.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+          <span class="font-bold text-sage-300 block mb-1">STEP 3. GitHub Pages 활성화</span>
+          <p class="text-slate-300">
+            1) 저장소 상단 메뉴에서 <strong>[Settings] -> [Pages]</strong> 선택<br>
+            2) Build and deployment 의 Branch 항목에서 <code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">main</code> (또는 master)을 선택하고 <strong>[Save]</strong> 클릭<br>
+            3) 1~2분 후 저장소 상단에 표시되는 내 전용 URL(<code class="bg-black/40 px-1.5 py-0.5 rounded text-amber-300">https://username.github.io/mind-rest/</code>)로 접속합니다!
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 text-right">
+        <button onclick="closeGithubModal()" class="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-400 text-white font-bold text-xs transition">
+          확인했습니다
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 1. Tab Switch Logic ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-sage-800', 'shadow-sm');
+        btn.classList.add('text-sage-600');
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      const activeContent = document.getElementById(`content-${tabId}`);
+
+      if (activeBtn && activeContent) {
+        activeBtn.classList.add('bg-white', 'text-sage-800', 'shadow-sm');
+        activeBtn.classList.remove('text-sage-600');
+        activeContent.classList.remove('hidden');
+      }
+    }
+
+    // --- 2. Grounding Checklist Logic ---
+    function resetGrounding() {
+      document.querySelectorAll('.grounding-input').forEach(input => {
+        input.value = '';
+      });
+    }
+
+    // --- 3. PMR (Progressive Muscle Relaxation) Logic ---
+    const pmrData = [
+      {
+        title: "어깨 & 목 이완하기",
+        badge: "단계 1: 어깨 & 목",
+        desc: "양 어깨를 귀에 붙인다는 느낌으로 5초간 꽉 끌어올려 힘을 주었다가 한 번에 툭 내려놓습니다."
+      },
+      {
+        title: "양주먹 & 팔 이완하기",
+        badge: "단계 2: 주먹 & 팔",
+        desc: "양손을 꽉 쥐고 이두근(알통)에 5초간 힘을 준 뒤, 힘을 풀며 팔끝으로 빠져나가는 열감을 느껴보세요."
+      },
+      {
+        title: "얼굴 & 턱 이완하기",
+        badge: "단계 3: 얼굴 & 턱",
+        desc: "눈을 꼭 감고 이빨을 지그시 물어 얼굴 전체를 찌푸렸다가 5초 후 어깨까지 툭 풀며 늘어뜨립니다."
+      },
+      {
+        title: "종아리 & 발가락 이완하기",
+        badge: "단계 4: 종아리 & 발",
+        desc: "발가락을 몸쪽으로 꽉 당겨 종아리 근육을 5초간 긴장시킨 뒤 힘을 내보냅니다."
+      }
+    ];
+
+    let currentPMRIndex = 0;
+    let pmrTimer = null;
+    let pmrTimeLeft = 5;
+    let pmrIsTensionPhase = true;
+
+    function selectPMRPart(index) {
+      currentPMRIndex = index;
+      document.querySelectorAll('.pmr-btn').forEach((btn, i) => {
+        if (i === index) {
+          btn.classList.add('bg-white', 'border-sage-300', 'text-sage-900', 'shadow-sm');
+          btn.classList.remove('bg-white/50', 'border-slate-200', 'text-slate-600');
+        } else {
+          btn.classList.remove('bg-white', 'border-sage-300', 'text-sage-900', 'shadow-sm');
+          btn.classList.add('bg-white/50', 'border-slate-200', 'text-slate-600');
+        }
+      });
+
+      resetPMR();
+    }
+
+    function startPMR() {
+      const startBtn = document.getElementById('startPmrBtn');
+      if (pmrTimer) {
+        clearInterval(pmrTimer);
+        pmrTimer = null;
+        startBtn.innerText = "이완 타이머 시작";
+        return;
+      }
+
+      startBtn.innerText = "일시정지";
+      pmrTimeLeft = 5;
+      pmrIsTensionPhase = true;
+      updatePMRUI();
+
+      pmrTimer = setInterval(() => {
+        pmrTimeLeft--;
+        if (pmrTimeLeft < 0) {
+          if (pmrIsTensionPhase) {
+            // Switch to Release Phase
+            pmrIsTensionPhase = false;
+            pmrTimeLeft = 10; // 10s relax phase
+          } else {
+            // End of Cycle
+            clearInterval(pmrTimer);
+            pmrTimer = null;
+            startBtn.innerText = "다음 완료 / 재시작";
+            alert("이완 세션이 완료되었습니다. 근육이 풀린 편안함을 느껴보세요.");
+            return;
+          }
+        }
+        updatePMRUI();
+      }, 1000);
+    }
+
+    function updatePMRUI() {
+      const data = pmrData[currentPMRIndex];
+      document.getElementById('pmrTitle').innerText = data.title;
+      document.getElementById('pmrDesc').innerText = data.desc;
+      document.getElementById('pmrTimerDisplay').innerText = pmrTimeLeft;
+
+      const circle = document.getElementById('pmrProgressCircle');
+      const label = document.getElementById('pmrPhaseLabel');
+      const badge = document.getElementById('pmrBadge');
+
+      if (pmrIsTensionPhase) {
+        label.innerText = "수축 (힘주기)";
+        label.className = "text-[10px] text-amber-600 font-bold";
+        badge.innerText = data.badge + " [수축 중]";
+        badge.className = "px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold mb-4";
+        circle.setAttribute('stroke', '#d97706'); // amber
+      } else {
+        label.innerText = "이완 (힘빼기)";
+        label.className = "text-[10px] text-emerald-600 font-bold";
+        badge.innerText = data.badge + " [이완 중]";
+        badge.className = "px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold mb-4";
+        circle.setAttribute('stroke', '#5c806c'); // sage green
+      }
+
+      const totalSeconds = pmrIsTensionPhase ? 5 : 10;
+      const offset = 339.29 * (1 - pmrTimeLeft / totalSeconds);
+      circle.style.strokeDashoffset = offset;
+    }
+
+    function resetPMR() {
+      if (pmrTimer) {
+        clearInterval(pmrTimer);
+        pmrTimer = null;
+      }
+      document.getElementById('startPmrBtn').innerText = "이완 타이머 시작";
+      pmrTimeLeft = 5;
+      pmrIsTensionPhase = true;
+      updatePMRUI();
+    }
+
+    // --- 4. Vagus Nerve Timer Logic ---
+    let vagusTimer = null;
+    let vagusTimeLeft = 60;
+
+    function toggleVagusTimer() {
+      const btn = document.getElementById('vagusTimerBtn');
+      const display = document.getElementById('vagusTimerText');
+
+      if (vagusTimer) {
+        clearInterval(vagusTimer);
+        vagusTimer = null;
+        btn.innerText = "타이머 시작";
+        return;
+      }
+
+      btn.innerText = "정지";
+      vagusTimer = setInterval(() => {
+        vagusTimeLeft--;
+        const mins = String(Math.floor(vagusTimeLeft / 60)).padStart(2, '0');
+        const secs = String(vagusTimeLeft % 60).padStart(2, '0');
+        display.innerText = `${mins}:${secs}`;
+
+        if (vagusTimeLeft <= 0) {
+          clearInterval(vagusTimer);
+          vagusTimer = null;
+          vagusTimeLeft = 60;
+          btn.innerText = "타이머 시작";
+          display.innerText = "01:00";
+          alert("1분 진정 세션이 완료되었습니다.");
+        }
+      }, 1000);
+    }
+
+    // --- 5. Box Breathing Logic (Inhale 4s -> Hold 4s -> Exhale 4s -> Hold 4s) ---
+    let boxTimer = null;
+    let boxStage = 0; // 0: Inhale, 1: Hold, 2: Exhale, 3: Hold
+    let boxTimeLeft = 4;
+
+    const stages = [
+      { text: "숨 들이쉬기", scale: "w-60 h-60 bg-sage-500/40 border-sage-600" },
+      { text: "숨 멈추기", scale: "w-60 h-60 bg-sage-500/40 border-sage-600" },
+      { text: "숨 내쉬기", scale: "w-24 h-24 bg-sage-500/10 border-sage-300" },
+      { text: "숨 멈추기", scale: "w-24 h-24 bg-sage-500/10 border-sage-300" }
+    ];
+
+    function toggleBoxBreathing() {
+      const btn = document.getElementById('boxStartBtn');
+
+      if (boxTimer) {
+        clearInterval(boxTimer);
+        boxTimer = null;
+        btn.innerText = "박스 호흡 시작하기";
+        document.getElementById('boxStageText').innerText = "준비";
+        document.getElementById('boxTimerText').innerText = "4";
+        return;
+      }
+
+      btn.innerText = "멈추기";
+      boxStage = 0;
+      boxTimeLeft = 4;
+      runBoxStage();
+
+      boxTimer = setInterval(() => {
+        boxTimeLeft--;
+        if (boxTimeLeft <= 0) {
+          boxStage = (boxStage + 1) % 4;
+          boxTimeLeft = 4;
+          runBoxStage();
+        } else {
+          document.getElementById('boxTimerText').innerText = boxTimeLeft;
+        }
+      }, 1000);
+    }
+
+    function runBoxStage() {
+      const square = document.getElementById('boxBreathSquare');
+      const stageText = document.getElementById('boxStageText');
+      const timerText = document.getElementById('boxTimerText');
+
+      const current = stages[boxStage];
+      stageText.innerText = current.text;
+      timerText.innerText = boxTimeLeft;
+
+      square.className = `${current.scale} border-2 rounded-2xl flex flex-col items-center justify-center shadow-lg backdrop-blur-sm transition-all duration-1000 ease-in-out`;
+    }
+
+    // --- 6. Ambient Rain Sound Generator (Web Audio API) ---
+    let audioCtx = null;
+    let noiseNode = null;
+    let isRainPlaying = false;
+
+    function toggleRainSound() {
+      const btn = document.getElementById('rainAudioBtn');
+      const icon = document.getElementById('rainIcon');
+      const text = document.getElementById('rainText');
+
+      if (!isRainPlaying) {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+        for (let i = 0; i < bufferSize; i++) {
+          let white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          output[i] *= 0.035; // Gentle volume
+          b6 = white * 0.115926;
+        }
+
+        noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = noiseBuffer;
+        noiseNode.loop = true;
+        noiseNode.connect(audioCtx.destination);
+        noiseNode.start();
+
+        btn.classList.add('bg-sage-700', 'text-white');
+        btn.classList.remove('glass-card', 'text-sage-800');
+        icon.className = 'fa-solid fa-volume-high text-white';
+        text.innerText = '빗소리 끄기';
+        isRainPlaying = true;
+      } else {
+        if (noiseNode) noiseNode.stop();
+        btn.classList.remove('bg-sage-700', 'text-white');
+        btn.classList.add('glass-card', 'text-sage-800');
+        icon.className = 'fa-solid fa-cloud-rain text-sage-500';
+        text.innerText = '빗소리 켜기';
+        isRainPlaying = false;
+      }
+    }
+
+    // --- 7. GitHub Modal Control ---
+    function openGithubModal() {
+      const modal = document.getElementById('githubModal');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeGithubModal() {
+      const modal = document.getElementById('githubModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+  </script>
+</body>
+</html>
