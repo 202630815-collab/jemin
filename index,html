@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마음의 안식처 - 숨, 그리고 휴식</title>
+  <style>
+    :root {
+      --bg-color: #eef2f5;
+      --text-color: #4a5568;
+      --accent-color: #7b9acc;
+      --circle-color: rgba(123, 154, 204, 0.25);
+      --circle-border: rgba(123, 154, 204, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem 1rem;
+      transition: background-color 1s ease;
+    }
+
+    header {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    header h1 {
+      font-weight: 300;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.8;
+    }
+
+    /* 심호흡 애니메이션 영역 */
+    .breathing-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .circle-outer {
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: var(--circle-color);
+      border: 2px solid var(--circle-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 30px rgba(123, 154, 204, 0.15);
+      transition: transform 4s ease-in-out;
+    }
+
+    /* 호흡 상태 클래스 */
+    .inhale {
+      transform: scale(1.35);
+    }
+
+    .hold {
+      transform: scale(1.35);
+    }
+
+    .exhale {
+      transform: scale(1);
+    }
+
+    .breath-instruction {
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: #2d3748;
+    }
+
+    .breath-btn {
+      margin-top: 2.5rem;
+      padding: 0.8rem 1.8rem;
+      border: none;
+      border-radius: 25px;
+      background-color: var(--accent-color);
+      color: white;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(123, 154, 204, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .breath-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* 마음 위로 문구 카드 */
+    .quote-card {
+      max-width: 480px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      margin: 1rem 0;
+      cursor: pointer;
+      transition: opacity 0.5s ease;
+    }
+
+    .quote-card p {
+      font-size: 1rem;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    .quote-hint {
+      display: block;
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
+      opacity: 0.5;
+    }
+
+    /* 하단 컨트롤 */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .sound-btn {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 0.6rem 1.2rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .sound-btn.active {
+      background-color: #4a5568;
+      color: white;
+      border-color: #4a5568;
+    }
+
+    footer {
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PAUSE & BREATHE</h1>
+    <p>잠시 모든 것을 내려놓고, 이곳에 머물러보세요.</p>
+  </header>
+
+  <!-- 호흡 운동 영역 -->
+  <div class="breathing-container">
+    <div class="circle-outer" id="breathCircle">
+      <span class="breath-instruction" id="breathText">준비</span>
+    </div>
+    <button class="breath-btn" id="startBtn" onclick="toggleBreathing()">호흡 시작하기</button>
+  </div>
+
+  <!-- 마음 안정 메시지 -->
+  <div class="quote-card" onclick="changeQuote()">
+    <p id="quoteText">"지금 당신이 느끼는 불안은 지나가는 구름과 같습니다. 곧 개일 거예요."</p>
+    <span class="quote-hint">✨ 카드를 누르면 새로운 글귀가 나타납니다</span>
+  </div>
+
+  <!-- 빗소리 백색소음 -->
+  <div class="controls">
+    <button class="sound-btn" id="rainBtn" onclick="toggleRainSound()">
+      🌧️ 차분한 빗소리
+    </button>
+  </div>
+
+  <footer>
+    <p>천천히 숨을 쉬는 것만으로도 몸은 편안해지기 시작합니다.</p>
+  </footer>
+
+  <script>
+    // 1. 심호흡 가이드 로직 (4초 들이쉬고, 4초 멈추고, 4초 내쉬기)
+    let isBreathing = false;
+    let breathInterval;
+    const breathCircle = document.getElementById('breathCircle');
+    const breathText = document.getElementById('breathText');
+    const startBtn = document.getElementById('startBtn');
+
+    function toggleBreathing() {
+      if (isBreathing) {
+        stopBreathing();
+      } else {
+        startBreathing();
+      }
+    }
+
+    function startBreathing() {
+      isBreathing = true;
+      startBtn.innerText = "멈추기";
+      runBreathingCycle();
+      breathInterval = setInterval(runBreathingCycle, 12000); // 12초 주기
+    }
+
+    function stopBreathing() {
+      isBreathing = false;
+      clearInterval(breathInterval);
+      startBtn.innerText = "호흡 시작하기";
+      breathText.innerText = "준비";
+      breathCircle.className = 'circle-outer';
+    }
+
+    function runBreathingCycle() {
+      if (!isBreathing) return;
+
+      // 들이쉬기 (4초)
+      breathText.innerText = "숨을 천천히 들이쉬세요";
+      breathCircle.className = 'circle-outer inhale';
+
+      // 멈추기 (4초 후)
+      setTimeout(() => {
+        if (!isBreathing) return;
+        breathText.innerText = "잠시 숨을 멈추세요";
+        breathCircle.className = 'circle-outer hold';
+      }, 4000);
+
+      // 내쉬기 (8초 후)
+      setTimeout(() => {
+        if (!isBreathing) return;
+        breathText.innerText = "천천히 숨을 내쉬세요";
+        breathCircle.className = 'circle-outer exhale';
+      }, 8000);
+    }
+
+    // 2. 마음 위로 문구 목록
+    const quotes = [
+      "지금 당장 모든 것을 해결하지 않아도 괜찮습니다.",
+      "지금 당신이 느끼는 불안은 지나가는 구름과 같습니다. 곧 개일 거예요.",
+      "어깨의 힘을 빼고, 턱의 긴장을 풀어보세요.",
+      "당신은 생각보다 훨씬 더 잘 해내고 있습니다.",
+      "완벽하지 않아도 됩니다. 오늘 하루도 충분히 애썼습니다.",
+      "과거도 미래도 아닌, 오직 '지금 이 순간'의 호흡에 집중해 보세요.",
+      "모든 파도를 막을 수는 없지만, 서핑하는 법을 배울 수는 있습니다."
+    ];
+
+    function changeQuote() {
+      const quoteText = document.getElementById('quoteText');
+      const card = document.querySelector('.quote-card');
+      
+      card.style.opacity = '0';
+      setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        quoteText.innerText = `"${quotes[randomIndex]}"`;
+        card.style.opacity = '1';
+      }, 300);
+    }
+
+    // 3. 빗소리 백색소음 (Web Audio API 기반 합성음)
+    let audioCtx;
+    let noiseNode;
+    let isPlaying = false;
+
+    function toggleRainSound() {
+      const rainBtn = document.getElementById('rainBtn');
+      
+      if (!isPlaying) {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // 핑크 노이즈 생성 (빗소리와 유사)
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+        for (let i = 0; i < bufferSize; i++) {
+          let white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          output[i] *= 0.05; // 부드러운 볼륨 조절
+          b6 = white * 0.115926;
+        }
+
+        noiseNode = audioCtx.createBufferSource();
+        noiseNode.buffer = noiseBuffer;
+        noiseNode.loop = true;
+        noiseNode.connect(audioCtx.destination);
+        noiseNode.start();
+
+        rainBtn.classList.add('active');
+        isPlaying = true;
+      } else {
+        if (noiseNode) {
+          noiseNode.stop();
+        }
+        rainBtn.classList.remove('active');
+        isPlaying = false;
+      }
+    }
+  </script>
+</body>
+</html>
